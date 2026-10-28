@@ -1,4 +1,4 @@
-.PHONY: help install test theme fastfetch ai-deploy ai-scaffold backup clean
+.PHONY: help install test test-lux theme fastfetch ai-deploy ai-scaffold backup clean
 
 # Default target
 help:
@@ -6,6 +6,7 @@ help:
 	@echo ""
 	@echo "  make install                     Run the full bootstrap (install/run.sh)"
 	@echo "  make test                        Run every checkpoint (tests/99_smoke.sh)"
+	@echo "  make test-lux                    Run isolated Lux alpha tests and ShellCheck"
 	@echo "  make theme THEME=<name>          Switch prompt theme"
 	@echo "                                   (default|tron|cyber|eva01|minimal)"
 	@echo "  make fastfetch                   Reinstall/relink the fastfetch greeting"
@@ -22,6 +23,13 @@ install:
 test:
 	@echo "🧪 Running checkpoints..."
 	@bash tests/99_smoke.sh
+
+test-lux:
+	@command -v bats >/dev/null || { echo "Missing bats" >&2; exit 1; }
+	@command -v shellcheck >/dev/null || { echo "Missing shellcheck" >&2; exit 1; }
+	@shellcheck -x -P lux lux/bin/lux lux/lib/*.sh lux/install.sh lux/hooks/* lux/tests/helpers/*
+	@bats lux/tests
+	@python3 -B -m unittest discover -s lux/tests -p 'test_*.py'
 
 theme:
 	@test -n "$(THEME)" || (echo "Usage: make theme THEME=default|tron|cyber|eva01|minimal" && exit 1)

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+case "$*" in
+    '--user enable lux-remind.timer') exit 0 ;;
+    *) exit 1 ;;
+esac

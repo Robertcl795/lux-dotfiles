@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+umask 077
+
+LUX_HOME="$(cd -- "$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")/.." && pwd)"
+source "$LUX_HOME/lib/common.sh"
+source "$LUX_HOME/lib/remind.sh"
+source "$LUX_HOME/lib/workflow.sh"
+
+if [[ ${1:-} == --vault ]]; then
+    [[ $# -ge 3 ]] || lux_usage_error '--vault requires a path and command'
+    LUX_VAULT=$2
+    shift 2
+fi
+case "${1:---help}" in
+    --help|help)
+        cat <<'EOF'
+Lux 0.1.0-g3 - local Markdown workflow
+Usage: lux [--vault PATH] COMMAND
+  add [TEXT]                  Capture text, stdin, or an interactive note
+  today                       Show focus and accepted tasks
+  mode                        Explain the effective context
+  checkout [--done IDS --comment TEXT]  Record user-reported completion
+  spec new SLUG               Create a proposed spec from the vault template
+  gate approve SLUG G1        Human terminal approval (no --yes)
+  check [--staged | --range BASE..TIP]  Validate documents and Git snapshots
+  commit --actor ACTOR -m TEXT Commit exactly what is staged, after validation
+  hooks install               Install hooks explicitly, never overwrite conflicts
+  doctor                      Diagnose CLI and notification readiness
+  remind add TEXT --at ISO     ISO timestamp must include an offset or Z
+  remind list                 Show pending, done and cancelled reminders
+  remind done ID              Mark complete (delivery does not complete it)
+  remind rm ID                Cancel without deleting its ID
+  remind tick                 Deliver overdue pending reminders
+  --version
+Desktop: LUX_DESKTOP=auto|notify-send|powershell|off (default auto).
+Mobile: disabled unless LUX_MOBILE=on and a private ntfy-topic file exists.
+G3 does not implement sync, agent isolation, or proof of human identity.
+EOF
+        ;;
+    --version) printf '0.1.0-g3\n' ;;
+    add|today|mode|check|doctor|remind|checkout|spec|gate|commit|hooks)
+        command=$1
+        shift
+        lux_context
+        case "$command" in
+            add) lux_add "$@" ;;
+            today) [[ $# == 0 ]] || lux_usage_error 'today takes no arguments'; lux_today ;;
+            mode) [[ $# == 0 ]] || lux_usage_error 'mode takes no arguments'; lux_mode ;;
+            check) lux_full_check "$@" ;;
+            doctor) [[ $# == 0 ]] || lux_usage_error 'doctor takes no arguments'; lux_doctor ;;
+            remind) lux_remind "$@" ;;
+            checkout) lux_checkout "$@" ;;
+            spec) lux_spec "$@" ;;
+            gate) lux_gate "$@" ;;
+            commit) lux_commit "$@" ;;
+            hooks) lux_hooks "$@" ;;
+        esac
+        ;;
+    *) lux_usage_error "unknown command: $1 (see lux --help)" ;;
+esac

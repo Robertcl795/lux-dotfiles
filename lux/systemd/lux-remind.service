@@ -1,0 +1,8 @@
+[Unit]
+Description=Deliver due Lux reminders from the configured local vault
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/lux remind tick
+UMask=0077
+TimeoutStartSec=5min

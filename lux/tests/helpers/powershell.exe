@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ $* == *Get-ExecutionPolicy* ]]; then
+    printf '%s\n' "${MOCK_EXEC_POLICY:-RemoteSigned}"
+    exit 0
+fi
+[[ ${MOCK_DESKTOP_FAIL:-0} == 0 ]] || exit 1
+printf '%s\n' "$*" >> "$MOCK_DELIVERIES"

@@ -19,6 +19,10 @@
 
 ## Install
 
+**Lux preview:** the Lux G3 CLI is available separately from the system
+bootstrap. See [Lux CLI](lux/README.md) for installation, workflows, reminders, tests,
+privacy boundaries and the GitHub Flow delivery workflow.
+
 **WSL (Arch / Ubuntu)**
 
 ```bash

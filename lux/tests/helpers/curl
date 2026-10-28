@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ ${MOCK_MOBILE_FAIL:-0} == 0 ]] || exit 1
+printf '%s\n' "$*" >> "$MOCK_MOBILE"

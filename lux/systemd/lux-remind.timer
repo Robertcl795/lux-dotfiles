@@ -1,0 +1,11 @@
+[Unit]
+Description=Check due Lux reminders each minute
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=1s
+Persistent=true
+Unit=lux-remind.service
+
+[Install]
+WantedBy=timers.target
